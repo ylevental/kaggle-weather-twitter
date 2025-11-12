@@ -2,4 +2,6 @@
 *.csv
 !submission.csv
 !submission_improved.csv
+!submission_best.csv
 training.log
+training_best.log
