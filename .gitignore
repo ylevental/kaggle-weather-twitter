@@ -1,3 +1,5 @@
 *.zip
 *.csv
 !submission.csv
+!submission_improved.csv
+training.log

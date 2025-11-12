@@ -71,7 +71,7 @@ def extract_text_features(df):
     features['word_count'] = df['tweet_clean'].str.split().str.len()
     features['avg_word_length'] = features['tweet_length'] / (features['word_count'] + 1)
     features['exclamation_count'] = df['tweet'].str.count('!')
-    features['question_count'] = df['tweet'].str.count('\?')
+    features['question_count'] = df['tweet'].str.count(r'\?')
     features['caps_count'] = df['tweet'].str.count('[A-Z]')
     features['has_url'] = df['tweet_clean'].str.contains('URL').astype(int)
     features['has_mention'] = df['tweet_clean'].str.contains('MENTION').astype(int)
@@ -148,49 +148,58 @@ try:
     print("Training sentiment model...")
     sentiment_preds = np.zeros((len(test), 5))
     for i in range(5):
+        print(f"  Training sentiment model {i+1}/5 (s{i+1})...")
         model = xgb.XGBRegressor(
-            n_estimators=200,
+            n_estimators=100,
             max_depth=6,
             learning_rate=0.1,
             subsample=0.8,
             colsample_bytree=0.8,
             random_state=42,
-            tree_method='hist'
+            tree_method='hist',
+            verbosity=1
         )
         model.fit(X_train, y_train[:, i])
         sentiment_preds[:, i] = model.predict(X_test)
+        print(f"  ✓ Completed sentiment model {i+1}/5")
 
     # When model
-    print("Training when model...")
+    print("\nTraining when model...")
     when_preds = np.zeros((len(test), 4))
     for i in range(4):
+        print(f"  Training when model {i+1}/4 (w{i+1})...")
         model = xgb.XGBRegressor(
-            n_estimators=200,
+            n_estimators=100,
             max_depth=6,
             learning_rate=0.1,
             subsample=0.8,
             colsample_bytree=0.8,
             random_state=42,
-            tree_method='hist'
+            tree_method='hist',
+            verbosity=1
         )
         model.fit(X_train, y_train[:, 5+i])
         when_preds[:, i] = model.predict(X_test)
+        print(f"  ✓ Completed when model {i+1}/4")
 
     # Kind model
-    print("Training kind model...")
+    print("\nTraining kind model...")
     kind_preds = np.zeros((len(test), 15))
     for i in range(15):
+        print(f"  Training kind model {i+1}/15 (k{i+1})...")
         model = xgb.XGBRegressor(
-            n_estimators=200,
+            n_estimators=100,
             max_depth=6,
             learning_rate=0.1,
             subsample=0.8,
             colsample_bytree=0.8,
             random_state=42,
-            tree_method='hist'
+            tree_method='hist',
+            verbosity=1
         )
         model.fit(X_train, y_train[:, 9+i])
         kind_preds[:, i] = model.predict(X_test)
+        print(f"  ✓ Completed kind model {i+1}/15")
 
 except ImportError:
     print("\nXGBoost not available, using Ridge regression...")
